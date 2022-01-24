@@ -4,6 +4,7 @@ import com.example.team1.domain.*;
 import com.example.team1.entity.ApplicationWorkflow;
 import com.example.team1.entity.Employee;
 import com.example.team1.entity.Person;
+import com.example.team1.entity.VisaStatus;
 import com.example.team1.exception.PersonInfoNotFoundException;
 import com.example.team1.response.UploadFileResponse;
 import com.example.team1.service.*;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -183,8 +185,9 @@ public class PersonController {
 
     @GetMapping("/visaNextStep")
     public VisaApplication getStep(@RequestParam("id") Integer id){
+        Person person = personService.findPersonById(id);
         ApplicationWorkflow applicationWorkflow = visaService.
-                getWorkflowByEmployeeId(employeeService.getEmployeeByPersonId(personService.findPersonById(id)).getId());
+                getWorkflowByEmployeeId(employeeService.getEmployeeByPersonId(person).getId());
         VisaApplication visaApplication = new VisaApplication();
         visaApplication.setNextStep(applicationWorkflow.getType());
         if(applicationWorkflow.getStatus().equals("Pending")){
@@ -197,6 +200,14 @@ public class PersonController {
             else {
                 visaApplication.setCurrentStatus("Your " +applicationWorkflow.getType() + " status is: " + applicationWorkflow.getStatus());
             }
+        }
+        Employee employee = employeeService.getEmployeeByPersonId(person);
+        LocalDate date1 = LocalDate.now();
+        LocalDate date2 = LocalDate.parse(employee.getVisaEndDate());
+        int dayleft = (int) ChronoUnit.DAYS.between(date1, date2);
+        if (dayleft <= 30){
+            visaApplication.setCurrentStatus("Your work authorization is almost expired, please update and upload form I983");
+            visaApplication.setNextStep("Upload I983");
         }
         return visaApplication;
     }
