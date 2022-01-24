@@ -11,4 +11,5 @@ import lombok.*;
 public class VisaApplication {
     public String currentStatus;
     public String nextStep;
+    public boolean showTemplate;
 }

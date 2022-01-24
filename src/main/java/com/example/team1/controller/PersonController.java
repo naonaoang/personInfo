@@ -190,6 +190,10 @@ public class PersonController {
                 getWorkflowByEmployeeId(employeeService.getEmployeeByPersonId(person).getId());
         VisaApplication visaApplication = new VisaApplication();
         visaApplication.setNextStep(applicationWorkflow.getType());
+        if(applicationWorkflow.getType().equals("I983")){
+            visaApplication.setShowTemplate(true);
+        }
+        else{visaApplication.setShowTemplate(false);}
         if(applicationWorkflow.getStatus().equals("Pending")){
             visaApplication.setCurrentStatus("Your " + applicationWorkflow.getType() + " is pending for approve");
         }
