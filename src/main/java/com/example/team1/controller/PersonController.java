@@ -193,7 +193,9 @@ public class PersonController {
         if(applicationWorkflow.getType().equals("I983")){
             visaApplication.setShowTemplate(true);
         }
-        else{visaApplication.setShowTemplate(false);}
+        else{
+            visaApplication.setShowTemplate(false);
+        }
         if(applicationWorkflow.getStatus().equals("Pending")){
             visaApplication.setCurrentStatus("Your " + applicationWorkflow.getType() + " is pending for approve");
         }
